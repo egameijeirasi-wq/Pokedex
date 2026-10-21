@@ -10,6 +10,7 @@ export interface IPokeApiListItem {
     url: string;
 }
 
+
 export interface IPokeApiListResponse {
     count: number;
     next: string | null;
@@ -35,6 +36,40 @@ export interface IPokeApiDetail {
     stats: Array<{ base_stat: number; stat: { name: string } }>;
     cries?: { latest?: string; legacy?: string };
 }
+
+
+export class BasePokemon  {
+    _id_: number;
+    _name: string;
+    _url: string;
+
+    constructor(item: IPokeApiListItem) {
+        this._id_ = Number(item.url.split("/").filter(Boolean).pop());
+        this._name = item.name;
+        this._url = item.url;
+    }
+    get name(): string{
+        return this._name
+    }
+    get id(): number{
+        return this._id_
+    }
+    get url(): string{
+        return this._url
+    }
+
+    get formattedId(): string{
+        return "#" + ("000" + this._id_).slice(-3);
+    }
+
+    get displayName(): string {
+        if (!this._name) return '';
+        return this._name.charAt(0).toUpperCase() + this._name.slice(1).toLowerCase();
+    }
+}
+
+
+
 
 
 // ==========================================================
