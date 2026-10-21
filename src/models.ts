@@ -70,10 +70,10 @@ export class BasePokemon  {
 // Por adaptar aun
 class DetailedPokemon extends BasePokemon{
     private weightKg: number;
-    private imageUrl: string;
-    private cryUrl: string;
-    private types: string;
-    private stats: [stat:string, quantiat:number];
+    private imageUrl: {};
+    private cryUrl: {};
+    private types: {};
+    private stats: {};
     constructor(weightKg: number,imageUrl:string,cryUrl:string,types:string,stats:[stat:string, quantiat:number], data: IPokeApiDetail, url:string) {
         super({name:data.name, url:url});
         this.weightKg = data.weight;
