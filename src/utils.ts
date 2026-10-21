@@ -97,6 +97,34 @@ export function reproduirCrit(soundUrl: string): void {
 // TODO: Implementa la lògica de l'exercici 1 seguint els requisits
 
 
+export function renderitzarLlistaNoms(llista: Models.BasePokemon[]) : void {
+
+    const contenidor = document.getElementById("pokemon-list");
+    if (!contenidor) return ;
+    contenidor.innerHTML = "";
+
+    for (const pokemon of llista){
+        const li = document.createElement("li");
+        li.dataset.id= String(pokemon._id_);
+        li.dataset.name = pokemon._name;
+        li.dataset.url = pokemon._url;
+
+        li.textContent = `${pokemon.formattedId} - ${pokemon._name}`;
+
+        contenidor.appendChild(li);
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
 /**
  * EXERCICI 3
  * Renderitza la targeta de detall dins de <div id="pokemon-detail">.
