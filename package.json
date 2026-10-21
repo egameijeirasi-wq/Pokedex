@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/egameijeirasi-wq/Pokedex/issues"
   },
-  "homepage": "https://github.com/egameijeirasi-wq/Pokedex#readme"
+  "homepage": "https://github.com/egameijeirasi-wq/Pokedex#readme",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
 }

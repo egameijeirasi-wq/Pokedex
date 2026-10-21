@@ -4,6 +4,49 @@
 //    IMPORTANT: només existeixen en temps de compilació. TypeScript NO
 //    valida en execució que l'API realment retorni aquesta estructura.
 // ==========================================================
+export class BasePokemon {
+    _id_;
+    _name;
+    _url;
+    constructor(item) {
+        this._id_ = Number(item.url.split("/").filter(Boolean).pop());
+        this._name = item.name;
+        this._url = item.url;
+    }
+    get name() {
+        return this._name;
+    }
+    get id() {
+        return this._id_;
+    }
+    get url() {
+        return this._url;
+    }
+    get formattedId() {
+        return "#" + ("000" + this._id_).slice(-3);
+    }
+    get displayName() {
+        if (!this._name)
+            return '';
+        return this._name.charAt(0).toUpperCase() + this._name.slice(1).toLowerCase();
+    }
+}
+// Por adaptar aun
+class DetailedPokemon extends BasePokemon {
+    //private weightKg: number;
+    //private imageUrl: string;
+    //private cryUrl: string;
+    //private types: string;
+    //private stats: [stat:string, quantiat:number];
+    constructor(weightKg, imageUrl, cryUrl, types, stats, data, url) {
+        super({ name: data.name, url: url });
+        //this.weightKg = data.weight;
+        //this.imageUrl = data.sprites;
+        //this.cryUrl = data.cries;
+        //this.types = data.types;
+        //this.stats = data.stats;
+    }
+}
 // ==========================================================
 // 3. PokemonType (JA IMPLEMENTADA, usa-la com a MODEL)
 //    Fixa't: `readonly` per a dades que no canvien i un getter
