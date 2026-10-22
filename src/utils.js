@@ -1,3 +1,4 @@
+import * as utils from "./utils.js";
 // ==========================================================
 // PART A: FUNCIONS JA IMPLEMENTADES (no cal modificar-les)
 // ==========================================================
@@ -11,6 +12,7 @@ export function mostrarEstat(missatge, tipus) {
         return;
     statusContainer.textContent = missatge;
     statusContainer.className = tipus; // el CSS defineix #status-message.loading / .error
+    console.log(statusContainer.innerHTML);
 }
 /**
  * Amaga el missatge d'estat.
@@ -21,6 +23,7 @@ export function amagarEstat() {
         return;
     statusContainer.textContent = "";
     statusContainer.className = "hidden";
+    console.log(statusContainer.innerHTML);
 }
 /**
  * Neteja l'input cercador i torna a mostrar tots els ítems de la llista.
@@ -82,6 +85,7 @@ export function reproduirCrit(soundUrl) {
  *  - Afegir el <li> al contenidor amb appendChild.
  */
 // TODO: Implementa la lògica de l'exercici 1 seguint els requisits
+//crea la vista de la lista de pokemons con su ID y displayname
 export function renderitzarLlistaNoms(mapa, contenidor) {
     contenidor.innerHTML = "";
     mapa.forEach((pokemon) => {
@@ -90,6 +94,7 @@ export function renderitzarLlistaNoms(mapa, contenidor) {
         li.innerHTML = `<strong>${pokemon.formattedId}</strong> - ${pokemon.name}`;
         contenidor.appendChild(li);
     });
+    utils.amagarEstat();
 }
 /**
  * EXERCICI 3

@@ -1,4 +1,5 @@
 import * as Models from "./models.js";
+import * as utils from "./utils.js";
 import * as Main from "./main.js";
 
 // ==========================================================
@@ -15,6 +16,7 @@ export function mostrarEstat(missatge: string, tipus: Models.EstatTipus): void {
 
     statusContainer.textContent = missatge;
     statusContainer.className = tipus; // el CSS defineix #status-message.loading / .error
+    console.log(statusContainer.innerHTML);
 }
 
 /**
@@ -26,6 +28,8 @@ export function amagarEstat(): void {
 
     statusContainer.textContent = "";
     statusContainer.className = "hidden";
+
+    console.log(statusContainer.innerHTML);
 }
 
 /**
@@ -107,15 +111,8 @@ export function renderitzarLlistaNoms(mapa: Map<number, Models.BasePokemon>, con
         li.innerHTML = `<strong>${pokemon.formattedId}</strong> - ${pokemon.name}`;
         contenidor.appendChild(li);
     });
+    utils.amagarEstat();
 }
-
-
-
-
-
-
-
-
 
 
 /**
