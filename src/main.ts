@@ -1,6 +1,5 @@
 import * as models from "./models.js";
 import * as utils from "./utils.js";
-import {EstatTipus} from "./models.js";
 
 
 // ==========================================================
@@ -63,7 +62,9 @@ btn_show_all.addEventListener("click", carregarLlistaPokemon);
 // ==========================================================
 // TODO: Implementa la lògica de l'exercici 4 seguint els requisits
 
-
+window.onload = () => {
+    utils.generarBotonsTipus();
+};
 
 // ==========================================================
 // EXERCICI 5: Filtrar la llista per tipus
