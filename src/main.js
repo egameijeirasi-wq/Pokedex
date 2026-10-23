@@ -70,6 +70,9 @@ async function carregarDetallPokemon(id, url) {
 // EXERCICI 4: Botons de filtre per tipus
 // ==========================================================
 // TODO: Implementa la lògica de l'exercici 4 seguint els requisits
+window.onload = () => {
+    utils.generarBotonsTipus();
+};
 // ==========================================================
 // EXERCICI 5: Filtrar la llista per tipus
 // ==========================================================

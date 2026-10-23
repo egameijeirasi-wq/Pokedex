@@ -1,6 +1,7 @@
 import * as Models from "./models.js";
 import * as utils from "./utils.js";
 import * as Main from "./main.js";
+import {PokemonTypeName} from "./models.js";
 
 // ==========================================================
 // PART A: FUNCIONS JA IMPLEMENTADES (no cal modificar-les)
@@ -170,6 +171,7 @@ export function renderitzarDetallCard(pokemon: Models.DetailedPokemon): void {
     }
 }
 
+
 /**
  * EXERCICI 4
  * Genera un botó per a cada tipus dins de <div id="type-filter-container">.
@@ -187,4 +189,19 @@ export function renderitzarDetallCard(pokemon: Models.DetailedPokemon): void {
 
 // TODO: Implementa la lògica de l'exercici 4 seguint els requisits
 
+export function generarBotonsTipus():void{
+    const typeFilterContainer = document.getElementById("type-filter-container");
+    if (!typeFilterContainer) return;
+
+    typeFilterContainer.innerHTML = ""; //vaciar el contenedor
+
+    for(const tipus of Object.values(Models.POKEMON_TYPES)){ //recorrer diccionario y crear botones con atributos
+        const btn = document.createElement("button");
+        btn.className = "btn-type";
+        btn.dataset.type = tipus.id;
+        btn.style.backgroundColor = tipus.color;
+        btn.textContent = tipus.label;
+        typeFilterContainer?.appendChild(btn);//añadir los botones al contenedor
+    }
+}
 

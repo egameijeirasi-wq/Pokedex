@@ -3,6 +3,7 @@ import * as utils from "./utils.js";
 import {EstatTipus} from "./models.js";
 
 
+
 // ==========================================================
 // EXERCICI 1: Llistar els 151 Pokémon
 // ==========================================================
@@ -92,7 +93,9 @@ async function carregarDetallPokemon(id: number, url: string): Promise<void> {
 // ==========================================================
 // TODO: Implementa la lògica de l'exercici 4 seguint els requisits
 
-
+window.onload = () => {
+    utils.generarBotonsTipus();
+};
 
 // ==========================================================
 // EXERCICI 5: Filtrar la llista per tipus
