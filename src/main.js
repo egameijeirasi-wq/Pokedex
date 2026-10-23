@@ -22,6 +22,7 @@ async function carregarLlistaPokemon() {
             mapaPokemon.set(pokemon.id, pokemon);
         }
         utils.renderitzarLlistaNoms(mapaPokemon, pokemonList);
+        utils.netejarCercador();
         utils.amagarEstat();
     }
     catch (error) {
@@ -34,6 +35,29 @@ btn_show_all.addEventListener("click", carregarLlistaPokemon);
 // EXERCICI 2: Cercador en temps real
 // ==========================================================
 // TODO: Implementa la lògica de l'exercici 2 seguint els requisits
+const searchInput = document.getElementById("search-input");
+searchInput.addEventListener("input", () => {
+    const text = searchInput.value.trim().toLowerCase();
+    const items = document.querySelectorAll("#pokemon-list li");
+    const esNumeric = /^\d+$/.test(text);
+    items.forEach((li) => {
+        const id = Number(li.dataset.id);
+        const pokemon = mapaPokemon.get(id);
+        if (!pokemon)
+            return;
+        let visible;
+        if (text === "") {
+            visible = true;
+        }
+        else if (esNumeric) {
+            visible = id === Number(text);
+        }
+        else {
+            visible = pokemon.name.toLowerCase().includes(text);
+        }
+        li.classList.toggle("hidden", !visible);
+    });
+});
 const cachePokemon = new Map();
 document.getElementById("pokemon-list")?.addEventListener("click", (event) => {
     const target = event.target;

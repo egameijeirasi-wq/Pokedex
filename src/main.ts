@@ -34,6 +34,7 @@ async function carregarLlistaPokemon() {
         }
 
         utils.renderitzarLlistaNoms(mapaPokemon, pokemonList);
+        utils.netejarCercador();
         utils.amagarEstat();
 
     } catch (error) {
@@ -50,6 +51,30 @@ btn_show_all.addEventListener("click", carregarLlistaPokemon);
 // ==========================================================
 // TODO: Implementa la lògica de l'exercici 2 seguint els requisits
 
+
+const searchInput = document.getElementById("search-input") as HTMLInputElement;
+
+searchInput.addEventListener("input" , () =>{
+    const text = searchInput.value.trim().toLowerCase();
+    const items = document.querySelectorAll<HTMLLIElement>("#pokemon-list li");
+
+    const esNumeric = /^\d+$/.test(text);
+    items.forEach((li) => {
+        const id = Number(li.dataset.id);
+        const pokemon = mapaPokemon.get(id);
+
+        if (!pokemon) return;
+        let visible : boolean;
+        if (text === ""){
+            visible= true ;
+        }else if (esNumeric){
+           visible = id === Number(text);
+        }else{
+            visible = pokemon.name.toLowerCase().includes(text);
+        }
+        li.classList.toggle("hidden" , !visible);
+    })
+})
 
 
 const cachePokemon = new Map<number, models.DetailedPokemon>();
