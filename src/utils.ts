@@ -1,4 +1,5 @@
 import * as Models from "./models.js";
+import * as utils from "./utils.js";
 import * as Main from "./main.js";
 
 // ==========================================================
@@ -15,6 +16,7 @@ export function mostrarEstat(missatge: string, tipus: Models.EstatTipus): void {
 
     statusContainer.textContent = missatge;
     statusContainer.className = tipus; // el CSS defineix #status-message.loading / .error
+    console.log(statusContainer.innerHTML);
 }
 
 /**
@@ -26,6 +28,8 @@ export function amagarEstat(): void {
 
     statusContainer.textContent = "";
     statusContainer.className = "hidden";
+
+    console.log(statusContainer.innerHTML);
 }
 
 /**
@@ -107,15 +111,8 @@ export function renderitzarLlistaNoms(mapa: Map<number, Models.BasePokemon>, con
         li.innerHTML = `<strong>${pokemon.formattedId}</strong> - ${pokemon.name}`;
         contenidor.appendChild(li);
     });
+    utils.amagarEstat();
 }
-
-
-
-
-
-
-
-
 
 
 /**
@@ -140,9 +137,38 @@ export function renderitzarLlistaNoms(mapa: Map<number, Models.BasePokemon>, con
  *  - El botó del crit només s'ha de pintar si pokemon.cryUrl no és null.
  *  - Un cop pintat l'HTML, afegeix el listener de clic al botó i crida reproduirCrit().
  */
+export function renderitzarDetallCard(pokemon: Models.DetailedPokemon): void {
+    const container = document.getElementById("pokemon-detail");
+    if (!container) return;
 
-// TODO: Implementa la lògica de l'exercici 3 seguint els requisits
+    const tipus = pokemon.types.map((t) => t.label).join(", ");
 
+    const stats = pokemon.stats
+        .map(([nom, valor]) =>
+            `<div class="stat-box"><span>${nom}</span><strong>${valor}</strong></div>`)
+        .join("");
+
+    const cryUrl = pokemon.cryUrl;
+    const botoCrit = cryUrl
+        ? `<button id="btn-play-cry" class="btn-cry">🔊 Escolta el crit</button>`
+        : "";
+
+    container.innerHTML = `
+        <div class="detail-card">
+            <h3>${pokemon.formattedId} ${pokemon.name}</h3>
+            <img src="${pokemon.imageUrl}" alt="${pokemon.name}">
+            ${botoCrit}
+            <p><strong>Pes:</strong> ${pokemon.weightKg} kg</p>
+            <p><strong>Tipus:</strong> ${tipus}</p>
+            <div class="stats-grid">${stats}</div>
+        </div>
+    `;
+
+    if (cryUrl) {
+        document.getElementById("btn-play-cry")
+            ?.addEventListener("click", () => reproduirCrit(cryUrl));
+    }
+}
 
 /**
  * EXERCICI 4

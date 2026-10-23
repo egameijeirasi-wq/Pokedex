@@ -31,20 +31,36 @@ export class BasePokemon {
         return this._name.charAt(0).toUpperCase() + this._name.slice(1).toLowerCase();
     }
 }
-// Por adaptar aun
-class DetailedPokemon extends BasePokemon {
-    //private weightKg: number;
-    //private imageUrl: string;
-    //private cryUrl: string;
-    //private types: string;
-    //private stats: [stat:string, quantiat:number];
-    constructor(weightKg, imageUrl, cryUrl, types, stats, data, url) {
+export class DetailedPokemon extends BasePokemon {
+    _weightKg;
+    _imageUrl;
+    _types;
+    _stats;
+    _cryUrl;
+    constructor(data, url) {
         super({ name: data.name, url: url });
-        //this.weightKg = data.weight;
-        //this.imageUrl = data.sprites;
-        //this.cryUrl = data.cries;
-        //this.types = data.types;
-        //this.stats = data.stats;
+        this._weightKg = data.weight / 10;
+        this._imageUrl = data.sprites.front_default ?? "";
+        this._cryUrl = data.cries?.latest || null;
+        this._types = data.types
+            .map((t) => POKEMON_TYPES[t.type.name])
+            .filter((type) => type !== undefined);
+        this._stats = data.stats.map((s) => [s.stat.name, s.base_stat]);
+    }
+    get weightKg() {
+        return this._weightKg;
+    }
+    get imageUrl() {
+        return this._imageUrl;
+    }
+    get cryUrl() {
+        return this._cryUrl;
+    }
+    get types() {
+        return this._types;
+    }
+    get stats() {
+        return this._stats;
     }
 }
 // ==========================================================

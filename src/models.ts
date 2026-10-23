@@ -67,20 +67,44 @@ export class BasePokemon  {
         return this._name.charAt(0).toUpperCase() + this._name.slice(1).toLowerCase();
     }
 }
-// Por adaptar aun
-class DetailedPokemon extends BasePokemon{
-    //private weightKg: number;
-    //private imageUrl: string;
-    //private cryUrl: string;
-    //private types: string;
-    //private stats: [stat:string, quantiat:number];
-    constructor(weightKg: number,imageUrl:string,cryUrl:string,types:string,stats:[stat:string, quantiat:number], data: IPokeApiDetail, url:string) {
-        super({name:data.name, url:url});
-        //this.weightKg = data.weight;
-        //this.imageUrl = data.sprites;
-        //this.cryUrl = data.cries;
-        //this.types = data.types;
-        //this.stats = data.stats;
+
+
+export class DetailedPokemon extends BasePokemon {
+    private _weightKg: number;
+    private _imageUrl: string;
+    private _types: PokemonType[];
+    private _stats: Stat[];
+    private _cryUrl: string | null;
+
+    constructor(data: IPokeApiDetail, url: string) {
+        super({ name: data.name, url: url });
+        this._weightKg = data.weight / 10;
+        this._imageUrl = data.sprites.front_default ?? "";
+        this._cryUrl = data.cries?.latest || null;
+        this._types = data.types
+            .map((t) => POKEMON_TYPES[t.type.name as PokemonTypeName])
+            .filter((type): type is PokemonType => type !== undefined);
+        this._stats = data.stats.map((s): Stat => [s.stat.name, s.base_stat]);
+    }
+
+    get weightKg(): number {
+        return this._weightKg;
+    }
+
+    get imageUrl(): string {
+        return this._imageUrl;
+    }
+
+    get cryUrl(): string | null {
+        return this._cryUrl;
+    }
+
+    get types(): PokemonType[] {
+        return this._types;
+    }
+
+    get stats(): Stat[] {
+        return this._stats;
     }
 }
 
