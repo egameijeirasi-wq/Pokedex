@@ -17,6 +17,11 @@ async function carregarLlistaPokemon() {
             throw new Error(`Error HTTP: ${resposta.status}`);
         }
         const data = await resposta.json();
+        mapaPokemon.clear();
+        document.querySelectorAll("#type-filter-container .btn-type")
+            .forEach((boto) => {
+            boto.classList.remove("active");
+        });
         for (const item of data.results) {
             const pokemon = new models.BasePokemon(item);
             mapaPokemon.set(pokemon.id, pokemon);
@@ -101,4 +106,47 @@ window.onload = () => {
 // EXERCICI 5: Filtrar la llista per tipus
 // ==========================================================
 // TODO: Implementa la lògica de l'exercici 5 seguint els requisits
+const typeFilterContainer = document.getElementById("type-filter-container");
+typeFilterContainer.addEventListener("click", (event) => {
+    const target = event.target;
+    const button = target.closest("button.btn-type");
+    if (!button || !button.dataset.type)
+        return;
+    const tipus = button.dataset.type;
+    typeFilterContainer.querySelectorAll(".btn-type")
+        .forEach((element) => {
+        element.classList.remove("active");
+    });
+    button.classList.add("active");
+    carregarPokemonPerTipus(tipus);
+});
+async function carregarPokemonPerTipus(tipus) {
+    utils.mostrarEstat("Carregant Pokémon del tipus seleccionat...", "loading");
+    try {
+        const resposta = await fetch(`https://pokeapi.co/api/v2/type/${tipus}`);
+        if (!resposta.ok) {
+            throw new Error(`Error HTTP: ${resposta.status}`);
+        }
+        const data = await resposta.json();
+        const pokemonFiltrats = new Map();
+        for (const item of data.pokemon) {
+            const pokemon = new models.BasePokemon(item.pokemon);
+            if (pokemon.id <= 151) {
+                pokemonFiltrats.set(pokemon.id, pokemon);
+            }
+        }
+        mapaPokemon.clear();
+        pokemonFiltrats.forEach((pokemon, id) => {
+            mapaPokemon.set(id, pokemon);
+        });
+        utils.renderitzarLlistaNoms(mapaPokemon, pokemonList);
+        utils.netejarCercador();
+        utils.netejarDetallCard();
+        utils.amagarEstat();
+    }
+    catch (error) {
+        const missatge = error instanceof Error ? error.message : "Error desconegut";
+        utils.mostrarEstat(`Error carregant el tipus: ${missatge}`, "error");
+    }
+}
 //# sourceMappingURL=main.js.map
