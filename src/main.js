@@ -7,6 +7,7 @@ import * as utils from "./utils.js";
 const btn_show_all = document.getElementById("btn-show-all");
 export const pokemonList = document.getElementById("pokemon-list");
 export const mapaPokemon = new Map();
+let mapaVisible = mapaPokemon;
 //llama a la lista de pokemons y comprueba si ha la ha devuelto y se la pasa a la funcion create_all_pokemos para crear los objetos BasePokemon
 async function carregarLlistaPokemon() {
     utils.mostrarEstat("Carregant...", "loading");
@@ -26,7 +27,8 @@ async function carregarLlistaPokemon() {
             const pokemon = new models.BasePokemon(item);
             mapaPokemon.set(pokemon.id, pokemon);
         }
-        utils.renderitzarLlistaNoms(mapaPokemon, pokemonList);
+        mapaVisible = mapaPokemon;
+        utils.renderitzarLlistaNoms(mapaVisible, pokemonList);
         utils.netejarCercador();
         utils.amagarEstat();
     }
@@ -47,7 +49,7 @@ searchInput.addEventListener("input", () => {
     const esNumeric = /^\d+$/.test(text);
     items.forEach((li) => {
         const id = Number(li.dataset.id);
-        const pokemon = mapaPokemon.get(id);
+        const pokemon = mapaVisible.get(id);
         if (!pokemon)
             return;
         let visible;
@@ -70,7 +72,7 @@ document.getElementById("pokemon-list")?.addEventListener("click", (event) => {
     if (!li || !li.dataset.id)
         return; // ignora el mensaje "placeholder"
     utils.marcarItemActiu(target);
-    const pokemon = mapaPokemon.get(Number(li.dataset.id));
+    const pokemon = mapaVisible.get(Number(li.dataset.id));
     if (pokemon) {
         carregarDetallPokemon(pokemon.id, pokemon.url);
     }
@@ -112,41 +114,52 @@ typeFilterContainer.addEventListener("click", (event) => {
     const button = target.closest("button.btn-type");
     if (!button || !button.dataset.type)
         return;
-    const tipus = button.dataset.type;
+    // Segundo clic sobre el botón activo: se desmarca y se restaura la lista completa
+    if (button.classList.contains("active")) {
+        button.classList.remove("active");
+        restaurarLlistaCompleta();
+        return;
+    }
     typeFilterContainer.querySelectorAll(".btn-type")
-        .forEach((element) => {
-        element.classList.remove("active");
-    });
+        .forEach((element) => element.classList.remove("active"));
     button.classList.add("active");
-    carregarPokemonPerTipus(tipus);
+    carregarPokemonPerTipus(button.dataset.type);
 });
+function restaurarLlistaCompleta() {
+    // Si nunca se cargó la lista (se filtró antes de pulsar el botón), hay que pedirla
+    if (mapaPokemon.size === 0) {
+        carregarLlistaPokemon();
+        return;
+    }
+    mapaVisible = mapaPokemon;
+    utils.renderitzarLlistaNoms(mapaVisible, pokemonList);
+    utils.netejarCercador();
+    utils.netejarDetallCard();
+}
 async function carregarPokemonPerTipus(tipus) {
     utils.mostrarEstat("Carregant Pokémon del tipus seleccionat...", "loading");
     try {
-        const resposta = await fetch(`https://pokeapi.co/api/v2/type/${tipus}`);
-        if (!resposta.ok) {
-            throw new Error(`Error HTTP: ${resposta.status}`);
+        const respuesta = await fetch(`https://pokeapi.co/api/v2/type/${tipus}`);
+        if (!respuesta.ok) {
+            throw new Error(`Error HTTP: ${respuesta.status}`);
         }
-        const data = await resposta.json();
+        const dato = await respuesta.json();
         const pokemonFiltrats = new Map();
-        for (const item of data.pokemon) {
+        for (const item of dato.pokemon) {
             const pokemon = new models.BasePokemon(item.pokemon);
             if (pokemon.id <= 151) {
                 pokemonFiltrats.set(pokemon.id, pokemon);
             }
         }
-        mapaPokemon.clear();
-        pokemonFiltrats.forEach((pokemon, id) => {
-            mapaPokemon.set(id, pokemon);
-        });
-        utils.renderitzarLlistaNoms(mapaPokemon, pokemonList);
+        mapaVisible = pokemonFiltrats; // el master no se toca
+        utils.renderitzarLlistaNoms(mapaVisible, pokemonList);
         utils.netejarCercador();
         utils.netejarDetallCard();
         utils.amagarEstat();
     }
     catch (error) {
-        const missatge = error instanceof Error ? error.message : "Error desconegut";
-        utils.mostrarEstat(`Error carregant el tipus: ${missatge}`, "error");
+        const mensaje = error instanceof Error ? error.message : "Error desconegut";
+        utils.mostrarEstat(`Error carregant el tipus: ${mensaje}`, "error");
     }
 }
 //# sourceMappingURL=main.js.map

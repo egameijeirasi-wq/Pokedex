@@ -204,4 +204,3 @@ export function generarBotonsTipus():void{
         typeFilterContainer?.appendChild(btn);//añadir los botones al contenedor
     }
 }
-

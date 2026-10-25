@@ -11,6 +11,7 @@ import {EstatTipus} from "./models.js";
 const btn_show_all = document.getElementById("btn-show-all") as HTMLButtonElement;
 export const pokemonList = document.getElementById("pokemon-list") as HTMLUListElement;
 export const mapaPokemon = new Map<number, models.BasePokemon>();
+let mapaVisible: Map<number, models.BasePokemon> = mapaPokemon;
 
 
 //llama a la lista de pokemons y comprueba si ha la ha devuelto y se la pasa a la funcion create_all_pokemos para crear los objetos BasePokemon
@@ -38,8 +39,8 @@ async function carregarLlistaPokemon() {
             const pokemon = new models.BasePokemon(item);
             mapaPokemon.set(pokemon.id, pokemon);
         }
-
-        utils.renderitzarLlistaNoms(mapaPokemon, pokemonList);
+        mapaVisible = mapaPokemon;
+        utils.renderitzarLlistaNoms(mapaVisible, pokemonList);
         utils.netejarCercador();
         utils.amagarEstat();
 
@@ -67,14 +68,14 @@ searchInput.addEventListener("input" , () =>{
     const esNumeric = /^\d+$/.test(text);
     items.forEach((li) => {
         const id = Number(li.dataset.id);
-        const pokemon = mapaPokemon.get(id);
+        const pokemon = mapaVisible.get(id);
 
         if (!pokemon) return;
         let visible : boolean;
         if (text === ""){
             visible= true ;
         }else if (esNumeric){
-           visible = id === Number(text);
+            visible = id === Number(text);
         }else{
             visible = pokemon.name.toLowerCase().includes(text);
         }
@@ -91,8 +92,7 @@ document.getElementById("pokemon-list")?.addEventListener("click", (event) => {
     if (!li || !li.dataset.id) return;   // ignora el mensaje "placeholder"
 
     utils.marcarItemActiu(target);
-
-    const pokemon = mapaPokemon.get(Number(li.dataset.id));
+    const pokemon = mapaVisible.get(Number(li.dataset.id));
     if (pokemon) {
         carregarDetallPokemon(pokemon.id, pokemon.url);
     }
@@ -135,22 +135,37 @@ window.onload = () => {
 
 const typeFilterContainer = document.getElementById("type-filter-container") as HTMLDivElement;
 
-typeFilterContainer.addEventListener("click" , (event) =>{
+typeFilterContainer.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
     const button = target.closest<HTMLButtonElement>("button.btn-type");
+    if (!button || !button.dataset.type) return;
 
-    if (!button || !button.dataset.type) return ;
-    const tipus = button.dataset.type;
+    // Segundo clic sobre el botón activo: se desmarca y se restaura la lista completa
+    if (button.classList.contains("active")) {
+        button.classList.remove("active");
+        restaurarLlistaCompleta();
+        return;
+    }
 
     typeFilterContainer.querySelectorAll(".btn-type")
-        .forEach((element) => {
-            element.classList.remove("active");
-        });
+        .forEach((element) => element.classList.remove("active"));
     button.classList.add("active");
-    carregarPokemonPerTipus(tipus);
+    carregarPokemonPerTipus(button.dataset.type);
 });
 
-    async function carregarPokemonPerTipus(tipus: string): Promise<void> {
+function restaurarLlistaCompleta(): void {
+    // Si nunca se cargó la lista (se filtró antes de pulsar el botón), hay que pedirla
+    if (mapaPokemon.size === 0) {
+        carregarLlistaPokemon();
+        return;
+    }
+    mapaVisible = mapaPokemon;
+    utils.renderitzarLlistaNoms(mapaVisible, pokemonList);
+    utils.netejarCercador();
+    utils.netejarDetallCard();
+}
+
+async function carregarPokemonPerTipus(tipus: string): Promise<void> {
 
     utils.mostrarEstat("Carregant Pokémon del tipus seleccionat...", "loading");
 
@@ -168,24 +183,19 @@ typeFilterContainer.addEventListener("click" , (event) =>{
 
         for (const item of dato.pokemon) {
             const pokemon = new models.BasePokemon(item.pokemon);
-
-
             if (pokemon.id <= 151) {
                 pokemonFiltrats.set(pokemon.id, pokemon);
             }
         }
 
-
-        mapaPokemon.clear();
-
-        pokemonFiltrats.forEach((pokemon, id) => {
-            mapaPokemon.set(id, pokemon);
-        });
-
-        utils.renderitzarLlistaNoms(mapaPokemon, pokemonList);
+        mapaVisible = pokemonFiltrats;      // el master no se toca
+        utils.renderitzarLlistaNoms(mapaVisible, pokemonList);
         utils.netejarCercador();
         utils.netejarDetallCard();
         utils.amagarEstat();
+
+
+
     } catch (error) {
         const mensaje = error instanceof Error ? error.message : "Error desconegut";
         utils.mostrarEstat(`Error carregant el tipus: ${mensaje}`, "error");
